@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Device Management Service API
+  description: API для управления устройствами в системе умного дома
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1/devices
+    description: Локальный сервер Device Management Service
+paths:
+  /:
+    get:
+      summary: Получить список устройств
+      description: Возвращает все устройства, зарегистрированные в системе.
+      responses:
+        '200':
+          description: Успешный ответ с данными об устройствах
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      summary: Зарегистрировать новое устройство
+      description: Добавляет новое устройство в систему.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '201':
+          description: Устройство успешно зарегистрировано
+  /{device_id}:
+    get:
+      summary: Получить данные устройства
+      description: Возвращает информацию об устройстве по его идентификатору.
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Уникальный идентификатор устройства
+      responses:
+        '200':
+          description: Успешный ответ с данными устройства
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+    patch:
+      summary: Обновить данные устройства
+      description: Обновляет информацию об устройстве.
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Уникальный идентификатор устройства
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdate'
+      responses:
+        '200':
+          description: Устройство успешно обновлено
+    delete:
+      summary: Удалить устройство
+      description: Удаляет устройство из системы.
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Уникальный идентификатор устройства
+      responses:
+        '204':
+          description: Устройство успешно удалено
+components:
+  schemas:
+    Device:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор устройства
+        name:
+          type: string
+          description: Имя устройства
+        type:
+          type: string
+          description: Тип устройства (например, "термостат", "освещение")
+        status:
+          type: string
+          description: Текущий статус устройства (например, "включено", "выключено")
+        last_active:
+          type: string
+          format: date-time
+          description: Время последней активности устройства
+    DeviceUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя устройства
+        status:
+          type: string
+          description: Текущий статус устройства (например, "включено", "выключено")

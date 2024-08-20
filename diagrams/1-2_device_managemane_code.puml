@@ -1,0 +1,19 @@
+@startuml
+!include \C4\C4_Component.puml
+
+Container_Boundary(device_management_service, "Device Management Service") {
+    Component(device_controller, "DeviceController", "Python Flask", "Обрабатывает HTTP-запросы")
+    Component(device_service_class, "DeviceService", "Python", "Основная логика управления устройствами")
+    Component(device_manager, "DeviceManager", "Python", "Управляет состоянием и конфигурацией устройств")
+    Component(device_event_publisher, "DeviceEventPublisher", "Python", "Публикация событий управления устройствами в Event Bus")
+    Component(device_repository, "DeviceRepository", "Python", "Интерфейс для доступа к базе данных управления устройствами")
+}
+
+ComponentDb(device_management_db, "Device Management DB", "PostgreSQL", "База данных для хранения информации об устройствах")
+
+Rel(device_controller, device_service_class, "Вызов методов сервиса")
+Rel(device_service_class, device_manager, "Использует")
+Rel(device_service_class, device_repository, "Сохраняет данные")
+Rel(device_service_class, device_event_publisher, "Публикация событий")
+Rel(device_repository, device_management_db, "Чтение и запись данных", "JDBC")
+@enduml

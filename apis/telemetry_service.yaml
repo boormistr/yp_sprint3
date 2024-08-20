@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: Telemetry Service API
+  description: API для управления и обработки телеметрии в системе умного дома
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1/telemetry
+    description: Локальный сервер Telemetry Service
+paths:
+  /data:
+    get:
+      summary: Получить телеметрические данные
+      description: Возвращает последние телеметрические данные от всех устройств.
+      responses:
+        '200':
+          description: Успешный ответ с телеметрическими данными
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryData'
+    post:
+      summary: Отправить телеметрические данные
+      description: Принимает телеметрические данные от устройства.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryData'
+      responses:
+        '201':
+          description: Данные успешно приняты
+  /events:
+    get:
+      summary: Получить события телеметрии
+      description: Возвращает все события, связанные с телеметрией.
+      responses:
+        '200':
+          description: Успешный ответ с событиями телеметрии
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryEvent'
+components:
+  schemas:
+    TelemetryData:
+      type: object
+      properties:
+        device_id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор устройства
+        value:
+          type: number
+          format: float
+          description: Значение, считанное датчиком
+        unit:
+          type: string
+          description: Единица измерения значения
+        timestamp:
+          type: string
+          format: date-time
+          description: Время получения данных
+    TelemetryEvent:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор события
+        device_id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор устройства
+        event_type:
+          type: string
+          description: Тип события
+        details:
+          type: string
+          description: Подробности события
+        timestamp:
+          type: string
+          format: date-time
+          description: Время события

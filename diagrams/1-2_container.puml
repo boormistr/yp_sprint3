@@ -1,0 +1,76 @@
+@startuml
+!include \C4\C4_Container.puml
+!include \C4\C4_Context.puml
+!include C4\C4_Component.puml
+
+!define DEVICONS \iconslib\icons\devicons
+!define FONTAWESOME5 \iconslib\icons\font-awesome-5
+!define FONTAWESOME6 \iconslib\icons\font-awesome-6
+!define DEVICONS2 \iconslib\icons\devicons2
+
+!include DEVICONS\mongodb.puml
+!include DEVICONS\postgresql.puml
+!include FONTAWESOME6\js.puml
+!include FONTAWESOME6\java.puml
+!include FONTAWESOME5\users.puml
+
+Person(admins, "Администраторы", "Администраторы системы управления умным домом", $sprite="users")
+Person_Ext(users, "Пользователи", "Пользователи систем умного дома", $sprite="users")
+
+Container_Ext(sensors, "Датчики", "Считывают и передают данные о температуре", $sprite="cogs")
+Container_Ext(devices, "Устройства", "Отопление, кондиционеры и другие устройства управления температурой", $sprite="cogs")
+
+System_Boundary("SmartHomeSystem", "Система умного дома") {
+    Container(users_front, "Фронт для пользователей", "JS", "Веб-интерфейс для доступа и управления устройствами", js)
+    Container(admins_front, "Фронт для администраторов", "JS", "Веб-интерфейс для администрирования системы", js)
+    Container(api_gateway, "API Gateway", "Java, Spring Cloud Gateway", "Сервис для авторизации и маршрутизации запросов", java)
+    ContainerDb(api_gateway_db, "API Gateway DB", "MongoDB", "Хранит данные по пользователях, правах", mongodb)
+
+    Boundary(api, "Smart Home API") {
+        Container(smart_home_api, "Smart Home API", "Java, Spring Boot", "Единый API для взаимодействия с устройствами и сенсорами", java)
+    }
+
+    Boundary(smart_home_core, "Smart Home Core") {
+        Container(smart_home, "Smart Home Core", "Java, Spring Boot", "Сервис хранящий логику взаимодействия устройств, домов, пользователей", java)
+        ContainerDb(smart_home_db, "Smart Home DB", "PostgreSQL", "База данных, хранящая данные о взаимодействии всех устройств, домов, пользователей", postgresql)
+    }
+
+    Boundary(telemetry_management, "Telemetry Management") {
+        Container(telemetry_service, "Telemetry Service", "Java, Spring Boot", "Сервис управления телеметрией, обрабатывает и хранит события", java)
+        ContainerDb(telemetry_db, "Telemetry DB", "PostgreSQL", "База данных для хранения телеметрических данных и событий", postgresql)
+    }
+
+    Boundary(device_management, "Device Management") {
+        Container(device_management_service, "Device Management Service", "Java, Spring Boot", "Сервис управления устройствами", java)
+        ContainerDb(device_management_db, "Device Management DB", "PostgreSQL", "База данных для хранения информации об устройствах", postgresql)
+    }
+
+    Boundary(monitoring, "Monitoring") {
+        Container(monitoring_service, "Monitoring Service", "Java, Spring Boot", "Сервис мониторинга и логирования событий", java)
+        ContainerDb(monitoring_db, "Monitoring DB", "PostgreSQL", "База данных для хранения логов и метрик", postgresql)
+    }
+
+    Container(event_bus, "Event Bus (Kafka)", "Kafka", "Шина событий для коммуникации между сервисами")
+}
+
+Rel(admins, admins_front, "Администрирование системы и добавление новых устройств", https)
+Rel(users, users_front, "Управление устройствами через веб-интерфейс", https)
+Rel(admins_front, api_gateway, "Запросы к API Gateway", https)
+Rel(users_front, api_gateway, "Запросы к API Gateway", https)
+Rel(api_gateway, api_gateway_db, "MongoDB protocol", tcp)
+Rel(api_gateway, event_bus, "Запросы к данным сервисов", async)
+
+Rel(sensors, smart_home_api, "Передача телеметрии", https)
+BiRel(devices, smart_home_api, "Передача данных и управление", https)
+Rel(api, event_bus, "Публикация событий", async)
+
+Rel(event_bus, telemetry_service, "Получение событий и данных телеметрии", async)
+Rel(event_bus, device_management_service, "Получение событий и управление устройствами", async)
+Rel(event_bus, monitoring_service, "Получение событий для мониторинга", async)
+Rel(event_bus, smart_home, "Получение данных о взаимо", async)
+
+Rel(telemetry_service, telemetry_db, "JDBC", tcp)
+Rel(device_management_service, device_management_db, "JDBC", tcp)
+Rel(monitoring_service, monitoring_db, "JDBC", tcp)
+Rel(smart_home, smart_home_db, "JDBC", tcp)
+@enduml

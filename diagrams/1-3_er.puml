@@ -1,0 +1,85 @@
+@startuml
+entity "Users" as users {
+    * user_id : UUID <<PK>>
+    --
+    name : varchar
+    email : varchar
+    password_hash : varchar
+    role_id : UUID <<FK>>
+    created_at : datetime
+}
+
+entity "Roles" as roles {
+    * role_id : UUID <<PK>>
+    --
+    role_name : varchar
+    description : varchar
+}
+
+entity "Homes" as homes {
+    * home_id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    address : varchar
+    name : varchar
+    created_at : datetime
+}
+
+entity "Devices" as devices {
+    * device_id : UUID <<PK>>
+    --
+    home_id : UUID <<FK>>
+    type_id : UUID <<FK>>
+    name : varchar
+    is_sensor : boolean
+    status : varchar
+    last_active : datetime
+    sensor_value : float
+    sensor_unit : varchar
+    last_updated : datetime
+    created_at : datetime
+}
+
+entity "DeviceTypes" as device_types {
+    * type_id : UUID <<PK>>
+    --
+    type_name : varchar
+    description : varchar
+}
+
+entity "Events" as events {
+    * event_id : UUID <<PK>>
+    --
+    device_id : UUID <<FK>>
+    event_type : varchar
+    event_time : datetime
+    details : text
+}
+
+entity "AutomationRules" as automation_rules {
+    * rule_id : UUID <<PK>>
+    --
+    home_id : UUID <<FK>>
+    rule_name : varchar
+    condition : text
+    action : text
+    created_at : datetime
+}
+
+entity "EventHistory" as event_history {
+    * history_id : UUID <<PK>>
+    --
+    event_id : UUID <<FK>>
+    processed_by : varchar
+    processed_time : datetime
+    outcome : varchar
+}
+
+users ||--o{ homes : "owns"
+homes ||--o{ devices : "has"
+devices ||--o{ events : "triggers"
+roles ||--o{ users : "assigns"
+homes ||--o{ automation_rules : "contains"
+events ||--o{ event_history : "logs"
+devices ||--o| device_types : "has type"
+@enduml

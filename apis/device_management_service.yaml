@@ -4,10 +4,10 @@ info:
   description: API для управления устройствами в системе умного дома
   version: 1.0.0
 servers:
-  - url: http://localhost:8080/api/v1/devices
+  - url: http://localhost:8080
     description: Локальный сервер Device Management Service
 paths:
-  /:
+  /api/v1/devices/:
     get:
       summary: Получить список устройств
       description: Возвращает все устройства, зарегистрированные в системе.
@@ -32,7 +32,7 @@ paths:
       responses:
         '201':
           description: Устройство успешно зарегистрировано
-  /{device_id}:
+  /api/v1/devices/{device_id}:
     get:
       summary: Получить данные устройства
       description: Возвращает информацию об устройстве по его идентификатору.

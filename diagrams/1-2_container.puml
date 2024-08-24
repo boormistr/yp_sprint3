@@ -62,12 +62,12 @@ Rel(api_gateway, event_bus, "Запросы к данным сервисов", a
 
 Rel(sensors, smart_home_api, "Передача телеметрии", https)
 BiRel(devices, smart_home_api, "Передача данных и управление", https)
-Rel(api, event_bus, "Публикация событий", async)
+BiRel(api, event_bus, "Публикация событий и управление устройствами", async)
 
 Rel(event_bus, telemetry_service, "Получение событий и данных телеметрии", async)
-Rel(event_bus, device_management_service, "Получение событий и управление устройствами", async)
+BiRel(event_bus, device_management_service, "Получение событий и управление устройствами", async)
 Rel(event_bus, monitoring_service, "Получение событий для мониторинга", async)
-Rel(event_bus, smart_home, "Получение данных о взаимо", async)
+BiRel(event_bus, smart_home, "Управление устройствами", async)
 
 Rel(telemetry_service, telemetry_db, "JDBC", tcp)
 Rel(device_management_service, device_management_db, "JDBC", tcp)

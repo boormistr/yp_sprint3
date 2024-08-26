@@ -1,0 +1,19 @@
+@startuml
+!include \C4\C4_Component.puml
+
+Container_Boundary(telemetry_service, "Telemetry Service") {
+    Component(telemetry_controller, "TelemetryController", "Python Flask", "Обрабатывает HTTP-запросы")
+    Component(telemetry_service_class, "TelemetryService", "Python", "Основная логика обработки телеметрии")
+    Component(telemetry_analyzer, "TelemetryAnalyzer", "Python", "Анализирует телеметрические данные")
+    Component(telemetry_event_publisher, "TelemetryEventPublisher", "Python", "Публикация событий телеметрии в Event Bus")
+    Component(telemetry_repository, "TelemetryRepository", "Python", "Интерфейс для доступа к базе данных телеметрии")
+}
+
+ComponentDb(telemetry_db, "Telemetry DB", "MongoDB", "База данных для хранения телеметрических данных")
+
+Rel(telemetry_controller, telemetry_service_class, "Вызов методов сервиса")
+Rel(telemetry_service_class, telemetry_analyzer, "Использует")
+Rel(telemetry_service_class, telemetry_repository, "Сохраняет данные")
+Rel(telemetry_service_class, telemetry_event_publisher, "Публикация событий")
+Rel(telemetry_repository, telemetry_db, "Чтение и запись данных", "MongoDB protocol")
+@enduml

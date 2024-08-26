@@ -1,0 +1,17 @@
+@startuml
+!include \C4\C4_Component.puml
+
+Container_Boundary(telemetry_service, "Telemetry Service") {
+    Component(telemetry_controller, "Telemetry Controller", "Java Spring Boot", "Обрабатывает HTTP-запросы от других микросервисов или устройств")
+    Component(telemetry_processor, "Telemetry Processor", "Java Spring Boot", "Обрабатывает и анализирует телеметрические данные")
+    Component(telemetry_repository, "Telemetry Repository", "Java Spring Data", "Интерфейс для доступа к MongoDB, использует Telemetry DB")
+    Component(telemetry_event_publisher, "Event Publisher", "Kafka Producer", "Публикует события телеметрии в Event Bus")
+}
+
+ComponentDb(telemetry_db, "Telemetry DB", "MongoDB", "База данных для хранения телеметрических данных")
+
+Rel(telemetry_controller, telemetry_processor, "Передача телеметрических данных для обработки")
+Rel(telemetry_processor, telemetry_repository, "Сохранение обработанных данных", "JDBC")
+Rel(telemetry_processor, telemetry_event_publisher, "Публикация событий телеметрии", "Kafka")
+Rel(telemetry_repository, telemetry_db, "Чтение и запись данных", "MongoDB protocol")
+@enduml

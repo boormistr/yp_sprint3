@@ -1,0 +1,26 @@
+@startuml
+!include \C4\C4_Container.puml
+!include \C4\C4_Context.puml
+!include C4\C4_Component.puml
+
+!define FONTAWESOME5 \iconslib\icons\font-awesome-5
+!include FONTAWESOME5\users.puml
+
+Person(admins, "Администраторы", "Администраторы системы управления умным домом", $sprite="users")
+Person_Ext(users, "Пользователи", "Пользователи систем умного дома", $sprite="users")
+
+System_Ext(sensors, "Датчики", "Считывают и передают данные о температуре")
+System_Ext(devices, "Устройства", "Отопление, кондиционеры и другие устройства управления температурой")
+
+Enterprise_Boundary(smart_house, "Smart House") {
+    System(temp_monitoring, "Мониторинг температуры", "Отслеживание текущей температуры в доме")
+    System(temp_management, "Управление температурой", "Регулирует температуру в доме")
+     System(sensors_system, "Система общения с датчиками", "Отвечает за взаимодействие с устройствами")
+}
+
+Rel(users, temp_monitoring, "Просматривает текущую температуру")
+Rel(users, temp_management, "Настраивает температуру")
+Rel(admins, smart_house, "Управляют системой умного дома")
+Rel(sensors, sensors_system, "Передает данные о температуре")
+Rel(temp_management, devices, "Управляет устройствами")
+@enduml

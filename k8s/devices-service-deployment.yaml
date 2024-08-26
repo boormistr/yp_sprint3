@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devices-deployment
+  labels:
+    app: devices
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devices
+  template:
+    metadata:
+      labels:
+        app: devices
+    spec:
+      containers:
+        - image: cr.yandex/crp7b04eeg81go412bn4/aleksey/devices
+          name: devices-service
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: pain

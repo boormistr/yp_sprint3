@@ -1,0 +1,17 @@
+@startuml
+!include \C4\C4_Component.puml
+
+Container_Boundary(device_management_service, "Device Management Service") {
+    Component(device_controller, "Device Controller", "Java Spring Boot", "Обрабатывает HTTP-запросы от других микросервисов или устройств")
+    Component(device_manager, "Device Manager", "Java Spring Boot", "Управляет состоянием и конфигурацией устройств")
+    Component(device_repository, "Device Repository", "Java Spring Data", "Интерфейс для доступа к PostgreSQL, использует Device Management DB")
+    Component(device_event_publisher, "Event Publisher", "Kafka Producer", "Публикует события управления устройствами в Event Bus")
+}
+
+ComponentDb(device_management_db, "Device Management DB", "PostgreSQL", "База данных для хранения информации об устройствах")
+
+Rel(device_controller, device_manager, "Передача данных об устройстве для обработки")
+Rel(device_manager, device_repository, "Сохранение и обновление данных об устройствах", "JDBC")
+Rel(device_manager, device_event_publisher, "Публикация событий управления устройствами", "Kafka")
+Rel(device_repository, device_management_db, "Чтение и запись данных", "JDBC")
+@enduml

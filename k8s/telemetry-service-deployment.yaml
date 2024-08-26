@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetry-deployment
+  labels:
+    app: telemetry
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: telemetry
+  template:
+    metadata:
+      labels:
+        app: telemetry
+    spec:
+      containers:
+        - image: cr.yandex/crp7b04eeg81go412bn4/aleksey/telemetry
+          name: telemetry-service
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: pain

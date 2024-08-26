@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smarthome-deployment
+  labels:
+    app: smarthome
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: smarthome
+  template:
+    metadata:
+      labels:
+        app: smarthome
+    spec:
+      containers:
+        - env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: your_password
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/smart_home
+            - name: SPRING_DATASOURCE_USERNAME
+              value: your_username
+          image: cr.yandex/crp7b04eeg81go412bn4/aleksey/smarthome
+          name: smart-home-monolith
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: pain
